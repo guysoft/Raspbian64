@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+# <Script Name>
+# <Description what this module does>
+# Written by <Author>
+# GPL V3
+########
+
+
+# Source error handling, leave this in place
+set -x
+set -e
+
+source /common.sh
+install_cleanup_trap
+
+unpack /filesystem/home/pi /home/pi pi
+unpack /filesystem/home/root /root root
+unpack /filesystem/boot /boot
+
+echo "This is an example module, install and set up what you need here!"
+echo "$RASPBIAN64_VAR"
+
+# Unpack root at the end, so files are modified before
+unpack /filesystem/root /
+
+
+gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 4D270D06F42584E6
+gpg --export 4D270D06F42584E6 | apt-key add
+
+gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys AA8E81B4331F7F50
+gpg --export AA8E81B4331F7F50 | apt-key add
+
+gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 112695A0E562B32A
+gpg --export 112695A0E562B32A | apt-key add
+apt-get update
+
+sed -i 's/deb /deb [arch=armhf] /' /etc/apt/sources.list
+sed -i 's/deb /deb [arch=armhf] /' /etc/apt/sources.list.d/raspi.list
+echo deb [arch=arm64] http://ftp.uk.debian.org/debian buster main >> /etc/apt/sources.list
+echo deb [arch=arm64] http://security.debian.org/ buster/updates main >> /etc/apt/sources.list
+echo deb [arch=arm64] http://plugwash.raspbian.org/multiarch buster main >> /etc/apt/sources.list
+echo deb http://plugwash.raspbian.org/multiarch-rpf buster main >> /etc/apt/sources.list.d/raspi.list
+
+
+gpg --keyserver keys2.kfwebs.net --recv-keys 6D33866EDD8FFA41C0143AEDDCC9EFBF77E11517
+gpg --export 6D33866EDD8FFA41C0143AEDDCC9EFBF77E11517 | apt-key add
+gpg --keyserver keys2.kfwebs.net --recv-keys B7ED7C2CB9C95A8BDF94369CE77FC0EC34276B4B
+gpg --export B7ED7C2CB9C95A8BDF94369CE77FC0EC34276B4B | apt-key add
+
+#dpkg --add-architecture arm64
+
+apt-get update
+apt-get install -y debootstrap debian-archive-keyring
+
+#apt-get clean
+#apt-get install -y --download-only dpkg:arm64
+#dpkg -i /var/cache/apt/archives/gcc-8-base_8.3.0-6+rpi1_arm64.deb
+dpkg -i  /var/cache/apt/archives/libgcc1_1%3a8.3.0-6+rpi1_arm64.deb /var/cache/apt/archives/libc6_2.28-10+rpi1_arm64.deb
+dpkg -i /var/cache/apt/archives/libbz2-1.0_1.0.6-9.2~deb10u1_arm64.deb
+dpkg -i /var/cache/apt/archives/libunistring2_0.9.10-1_arm64.deb
+dpkg -i /var/cache/apt/archives/libidn2-0_2.0.5-1_arm64.deb
+dpkg -i /var/cache/apt/archives/liblzma5_5.2.4-1_arm64.deb
+dpkg -i /var/cache/apt/archives/libpcre3_2%3a8.39-12_arm64.deb
+dpkg -i /var/cache/apt/archives/libselinux1_2.8-1+b1_arm64.deb
+dpkg -i /var/cache/apt/archives/zlib1g_1%3a1.2.11.dfsg-1_arm64.deb
+#dpkg -i /var/cache/apt/archives/dpkg_1.19.7_arm64.deb
+# ar x -v  /var/cache/apt/archives/dpkg_1.19.7_arm64.deb
+# tar xfv data.tar.xz
+#apt-get install -y apt:arm64
+curl -sSL get.docker.com -o install_docker
+sed -i 's/\$\(dpkg --print-architecture\)/arm64/g' install_docker
+sed -i 's/\raspbian/debian/g' install_docker
+sh ./install_docker
+apt-get update
+apt-get install docker-ce:arm64 libdevmapper1.02.1:arm64  libsystemd0:arm64 dbus:arm64
+bash
+# apt-get install -y --download-only dpkg:arm64 apt:arm64 libapt-pkg5.0:arm64  libsystemd0:arm64  libudev1:arm64 
+ 
+
+ls /var/cache/apt/archives/
+# dpkg --force-depends --install /var/cache/apt/archives/*_arm0.deb
+dpkg --print-architecture
+apt-get clean
+
+
+# debootstrap --arch arm64 buster /chroot64
+
+# pushd /chroot64
+# find . -depth | while read f
+# do
+#     if file -L "$f" | grep -q ELF
+#         then
+#             echo "$f" >> /chroot64/bins.txt
+#     fi
+# done
+# popd
+# echo "./etc/ld.so.cache" >> /chroot64/bins.txt
+# cp /64bit_chroot /chroot64/64bit_chroot
+# chroot /chroot64 /bin/bash /64bit_chroot
+
+echo arm_64bit=1 >> /boot/config.txt

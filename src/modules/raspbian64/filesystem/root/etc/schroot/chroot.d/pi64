@@ -1,0 +1,10 @@
+[pi64]
+description=VC4 arm64 testing
+type=directory
+directory=/chroot/pi64
+users=pi
+root-groups=root
+profile=desktop
+personality=linux
+preserve-environment=true
+
