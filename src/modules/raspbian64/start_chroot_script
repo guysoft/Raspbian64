@@ -24,7 +24,7 @@ echo "$RASPBIAN64_VAR"
 unpack /filesystem/root /
 
 apt-get update
-apt-get install -y debootstrap debian-archive-keyring
+apt-get install -y debootstrap debian-archive-keyring schroot
 
 
  debootstrap --arch arm64 buster /chroot64
@@ -41,5 +41,10 @@ popd
 echo "./etc/ld.so.cache" >> /chroot64/bins.txt
 cp /64bit_chroot /chroot64/64bit_chroot
 chroot /chroot64 /bin/bash /64bit_chroot
+mv /run_docker /chroot64/run_docker
+
+# Add systemd service
+systemctl enable chroot_docker.service
+
 
 echo arm_64bit=1 >> /boot/config.txt

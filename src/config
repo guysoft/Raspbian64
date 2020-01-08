@@ -2,4 +2,7 @@ export DIST_NAME=Raspbian64
 export DIST_VERSION=0.1.0
 export MODULES="base(network,disable-services(raspbian64), usage-statistics)"
 
+# if set will enlarge root parition prior to build by provided size in MB
+export BASE_IMAGE_ENLARGEROOT=1000
+
 export USAGE_STATISTICS_URL=https://raspbian64-tracking.gnethomelinux.com

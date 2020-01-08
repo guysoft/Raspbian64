@@ -1,0 +1,2 @@
+#!/bin/bash
+sudo schroot -c pi64 -u root --directory / -- bash

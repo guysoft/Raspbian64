@@ -1,0 +1,10 @@
+[Unit]
+Description=Docker chroot server
+[Service]
+ExecStart=/usr/bin/start_docker
+[Install]
+WantedBy=multi-user.target
+[Service]
+WorkingDirectory=/
+User=root
+

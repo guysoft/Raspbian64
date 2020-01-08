@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+sudo modprobe overlay
+sudo schroot -c pi64 -u root --directory / -- bash -x /run_docker
